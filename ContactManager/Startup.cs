@@ -13,6 +13,8 @@ using ContactManager.Data;
 using ContactManager.Models;
 using ContactManager.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace ContactManager
 {
@@ -56,6 +58,14 @@ namespace ContactManager
 
             // code removed for brevity
 
+            services.AddMvc(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            });
+
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new RequireHttpsAttribute());
@@ -72,7 +82,7 @@ namespace ContactManager
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseBrowserLink();
+               // app.UseBrowserLink();
             }
             else
             {

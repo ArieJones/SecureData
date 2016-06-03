@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using ContactManager.Data;
 using ContactManager.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContactManager.Controllers
 {
@@ -60,12 +61,14 @@ namespace ContactManager.Controllers
         // POST: Contacts/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // TO-DO note - remove ApplicationUser_Id from bind
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ContactId,Address,City,Email,Name,State,Zip")] Contact contact)
         {
             if (ModelState.IsValid)
             {
+                contact.ApplicationUser_Id = _userManager.GetUserId(User);
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -86,6 +89,12 @@ namespace ContactManager.Controllers
             {
                 return NotFound();
             }
+
+            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            {
+                return Unauthorized();  // TO-DO review this redirects to login -
+            }
+
             return View(contact);
         }
 
@@ -99,6 +108,11 @@ namespace ContactManager.Controllers
             if (id != contact.ContactId)
             {
                 return NotFound();
+            }
+
+            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            {
+                return Unauthorized();
             }
 
             if (ModelState.IsValid)
@@ -138,6 +152,11 @@ namespace ContactManager.Controllers
                 return NotFound();
             }
 
+            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            {
+                return Unauthorized();
+            }
+
             return View(contact);
         }
 
@@ -147,6 +166,43 @@ namespace ContactManager.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
+
+            _context.Contact.Remove(contact);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index");
+        }
+
+        // GET: Contacts/AdminDelete/5
+     //   [Authorize("canDelete")]
+        public async Task<IActionResult> AdminDelete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
+            if (contact == null)
+            {
+                return NotFound();
+            }
+
+            return View(contact);
+        }
+
+        // POST: Contacts/AdminDelete/5
+        //   [Authorize("canDelete")]
+        [HttpPost, ActionName("AdminDelete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AdminDeleteConfirmed(int id)
+        {
+            var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
+
+            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            {
+                return Unauthorized();
+            }
+
             _context.Contact.Remove(contact);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

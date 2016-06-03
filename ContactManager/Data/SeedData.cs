@@ -17,12 +17,14 @@ namespace ContactManager.Data
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
                 var uid = await CreateTestUser(serviceProvider);
+                await CreateCanDeleteRole(serviceProvider, uid);
                 SeedDB(context, uid);
             }
         }
 
         private static async Task<string> CreateTestUser(IServiceProvider serviceProvider)
         {
+            // TO-DO move to secrets manager
             const string SeedUserName = "test@example.com";
             const string tmpPW = "Pa$$w0rd1!";
             
@@ -36,6 +38,25 @@ namespace ContactManager.Data
             }
 
             return user.Id;
+        }
+
+        private static async Task<IdentityResult> CreateCanDeleteRole(IServiceProvider serviceProvider, string uid)
+        {
+            const string canDeleteRole = "canDelete";
+            IdentityResult ir = null;
+            var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
+
+            if (!await roleManager.RoleExistsAsync(canDeleteRole))
+            {
+                ir = await roleManager.CreateAsync(new IdentityRole(canDeleteRole));
+            }
+
+            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
+
+            var user = await userManager.FindByIdAsync(uid);
+           
+            ir = await userManager.AddToRoleAsync(user, canDeleteRole);
+            return ir;
         }
 
         public static void SeedDB(ApplicationDbContext context, string uid)
