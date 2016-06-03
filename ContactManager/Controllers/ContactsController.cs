@@ -173,7 +173,7 @@ namespace ContactManager.Controllers
         }
 
         // GET: Contacts/AdminDelete/5
-     //   [Authorize("canDelete")]
+        [Authorize(Roles = "canDelete")]
         public async Task<IActionResult> AdminDelete(int? id)
         {
             if (id == null)
@@ -191,17 +191,12 @@ namespace ContactManager.Controllers
         }
 
         // POST: Contacts/AdminDelete/5
-        //   [Authorize("canDelete")]
+        [Authorize(Roles = "canDelete")]
         [HttpPost, ActionName("AdminDelete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AdminDeleteConfirmed(int id)
         {
             var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
-
-            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
-            {
-                return Unauthorized();
-            }
 
             _context.Contact.Remove(contact);
             await _context.SaveChangesAsync();

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ContactManager.Data
@@ -13,11 +15,14 @@ namespace ContactManager.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
+            const string canDeleteRole = "canDelete";
+
             using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
                 var uid = await CreateTestUser(serviceProvider);
-                await CreateCanDeleteRole(serviceProvider, uid);
+                await CreateCanDeleteRole(serviceProvider, uid, canDeleteRole);
+                AddRole(canDeleteRole);
                 SeedDB(context, uid);
             }
         }
@@ -40,9 +45,8 @@ namespace ContactManager.Data
             return user.Id;
         }
 
-        private static async Task<IdentityResult> CreateCanDeleteRole(IServiceProvider serviceProvider, string uid)
+        private static async Task<IdentityResult> CreateCanDeleteRole(IServiceProvider serviceProvider, string uid, string canDeleteRole)
         {
-            const string canDeleteRole = "canDelete";
             IdentityResult ir = null;
             var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
 
@@ -57,6 +61,16 @@ namespace ContactManager.Data
            
             ir = await userManager.AddToRoleAsync(user, canDeleteRole);
             return ir;
+        }
+
+        // TO-DO remove, not needed
+        public static void AddRole(string canDeleteRole)
+        {
+            const string Issuer = "https://contoso.com";
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.Role, canDeleteRole, ClaimValueTypes.String, Issuer));
+            var userIdentity = new ClaimsIdentity("SuperSecureLogin");
+            userIdentity.AddClaims(claims);
         }
 
         public static void SeedDB(ApplicationDbContext context, string uid)
