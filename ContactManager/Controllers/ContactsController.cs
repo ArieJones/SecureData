@@ -92,7 +92,8 @@ namespace ContactManager.Controllers
 
             if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
             {
-                return Unauthorized();  // TO-DO review this redirects to login -
+                return Unauthorized();  // TO-DO review this redirects to login - return error page you can only edit yourself 
+                // UnauthorizedView
             }
 
             return View(contact);
