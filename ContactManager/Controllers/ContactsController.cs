@@ -13,11 +13,16 @@ namespace ContactManager.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ContactsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public ContactsController(
+            ApplicationDbContext context, 
+            UserManager<ApplicationUser> userManager,
+            IAuthorizationService authorizationService)
         {
             _context = context;
             _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         // GET: Contacts
@@ -90,10 +95,10 @@ namespace ContactManager.Controllers
                 return NotFound();
             }
 
-            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, contact, ContactOperationsRequirements.Update);
+            if (!isAuthorized)
             {
-                return View("AuthzError");  
-                // UnauthorizedView
+                return new ChallengeResult();
             }
 
             return View(contact);
@@ -111,9 +116,10 @@ namespace ContactManager.Controllers
                 return NotFound();
             }
 
-            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, contact, ContactOperationsRequirements.Update);
+            if (!isAuthorized)
             {
-                return View("AuthzError");
+                return new ChallengeResult();
             }
 
             if (ModelState.IsValid)
@@ -153,51 +159,31 @@ namespace ContactManager.Controllers
                 return NotFound();
             }
 
-            if (contact.ApplicationUser_Id != _userManager.GetUserId(User))
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, contact, ContactOperationsRequirements.Delete);
+            if (!isAuthorized)
             {
-                return View("AuthzError");
+                return new ChallengeResult();
             }
 
             return View(contact);
         }
 
         // POST: Contacts/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
-
-            _context.Contact.Remove(contact);
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
-
-        // GET: Contacts/AdminDelete/5
-        [Authorize(Roles = "canDelete")]
-        public async Task<IActionResult> AdminDelete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
             if (contact == null)
             {
                 return NotFound();
             }
 
-            return View(contact);
-        }
-
-        // POST: Contacts/AdminDelete/5
-        [Authorize(Roles = "canDelete")]
-        [HttpPost, ActionName("AdminDelete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AdminDeleteConfirmed(int id)
-        {
-            var contact = await _context.Contact.SingleOrDefaultAsync(m => m.ContactId == id);
+            var isAuthorized = await _authorizationService.AuthorizeAsync(User, contact, ContactOperationsRequirements.Delete);
+            if (!isAuthorized)
+            {
+                return new ChallengeResult();
+            }
 
             _context.Contact.Remove(contact);
             await _context.SaveChangesAsync();
