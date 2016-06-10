@@ -66,10 +66,25 @@ namespace ContactManager
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            services.Configure<MvcOptions>(options =>
+            //services.Configure<MvcOptions>(options =>
+            //{
+            //    options.Filters.Add(new RequireHttpsAttribute());
+            //});
+
+/*            services.AddAuthorization(options =>
             {
-                options.Filters.Add(new RequireHttpsAttribute());
-            });
+                options.AddPolicy("CanEdit",
+                                  policy => policy.Requirements.Add(ContactOperationsRequirements.Update));
+            }); */
+
+
+            // We can add the ContactRoleAuthorizationHandler as a singleton as all the information
+            // it needs is in the Context parameter.
+            services.AddSingleton<IAuthorizationHandler, ContactRoleAuthorizationHandler>();
+
+            // As ContactIsOwner requires identity, which in turn requires EF, we add this handler
+            // scoped.
+            services.AddScoped<IAuthorizationHandler, ContactIsOwnerAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
