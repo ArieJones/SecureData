@@ -26,7 +26,7 @@ namespace ContactManager
                 return;
             }
 
-            if (resource.ApplicationUser_Id == _userManager.GetUserId(context.User))
+            if (resource.OwnerID == _userManager.GetUserId(context.User))
             {
                 context.Succeed(requirement);
             }

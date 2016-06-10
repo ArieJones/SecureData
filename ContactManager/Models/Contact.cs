@@ -7,7 +7,7 @@ namespace ContactManager.Models
         public int ContactId { get; set; }
 
         // FK to AspNetUser table Id         // ownerID rename
-        public string ApplicationUser_Id { get; set; }
+        public string OwnerID { get; set; }
 
         public string Name { get; set; }
         public string Address { get; set; }

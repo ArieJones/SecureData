@@ -54,9 +54,9 @@ namespace ContactManager.Controllers
             //return View();
             return View(new Contact
             {
-                Address = "123 N 456 S",
+                Address = "123 N 456 E",
                 City = "GF",
-                Email = "joe@example.com",
+                Email = _userManager.GetUserId(User),
                 Name = "Joe Smith",
                 State = "MT",
                 Zip = "59405"
@@ -66,14 +66,14 @@ namespace ContactManager.Controllers
         // POST: Contacts/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // TO-DO note - remove ApplicationUser_Id from bind
+        // TO-DO note - remove OwnerID from bind
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ContactId,Address,City,Email,Name,State,Zip")] Contact contact)
         {
             if (ModelState.IsValid)
             {
-                contact.ApplicationUser_Id = _userManager.GetUserId(User);
+                contact.OwnerID = _userManager.GetUserId(User);
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -109,7 +109,7 @@ namespace ContactManager.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ContactId,Address,ApplicationUser_Id,City,Email,Name,State,Zip")] Contact contact)
+        public async Task<IActionResult> Edit(int id, [Bind("ContactId,Address,OwnerID,City,Email,Name,State,Zip")] Contact contact)
         {
             if (id != contact.ContactId)
             {

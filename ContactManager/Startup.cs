@@ -108,15 +108,31 @@ namespace ContactManager
 
             app.UseIdentity();
 
-            // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
-            SeedData.Initialize(app.ApplicationServices).Wait();
+
+            var testUserPw = Configuration["SeedUserPW"];
+
+            if (String.IsNullOrEmpty(testUserPw))
+            {
+                throw new System.Exception("Use secrets manager/environment to set SeedUserPW");
+            }
+
+            try
+            {
+               SeedData.Initialize(app.ApplicationServices, testUserPw).Wait();
+            }
+            catch
+            {
+                throw new System.Exception("You need to update the DB "
+                    + "\nPM > Update - Database " + "\n or \n" +
+                      "> dotnet ef database update"
+                      + "\nIf that doesn't work, comment out SeedData and register a new user");
+            }
         }
     }
 }

@@ -71,13 +71,13 @@ namespace ContactManager.Data.Migrations
 
                     b.Property<string>("Address");
 
-                    b.Property<string>("ApplicationUser_Id");
-
                     b.Property<string>("City");
 
                     b.Property<string>("Email");
 
                     b.Property<string>("Name");
+
+                    b.Property<string>("OwnerID");
 
                     b.Property<string>("State");
 

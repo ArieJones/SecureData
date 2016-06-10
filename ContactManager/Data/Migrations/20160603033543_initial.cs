@@ -16,7 +16,7 @@ namespace ContactManager.Data.Migrations
                     ContactId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Address = table.Column<string>(nullable: true),
-                    ApplicationUser_Id = table.Column<string>(nullable: true),
+                    OwnerID = table.Column<string>(nullable: true),
                     City = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),

@@ -13,33 +13,31 @@ namespace ContactManager.Data
 {
     public static class SeedData
     {
-        public static async Task Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IServiceProvider serviceProvider, string testUserPw)
         {
             const string canDeleteRole = "canDelete";
 
             using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
-                var uid = await CreateTestUser(serviceProvider);
+                var uid = await CreateTestUser(serviceProvider, testUserPw);
                 await CreateCanDeleteRole(serviceProvider, uid, canDeleteRole);
                 AddRole(canDeleteRole);
                 SeedDB(context, uid);
             }
         }
 
-        private static async Task<string> CreateTestUser(IServiceProvider serviceProvider)
+        private static async Task<string> CreateTestUser(IServiceProvider serviceProvider, string testUserPw)
         {
-            // TO-DO move to secrets manager
             const string SeedUserName = "test@example.com";
-            const string tmpPW = "Pa$$w0rd1!";
-            
+
             var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
             var user = await userManager.FindByNameAsync(SeedUserName);
             if (user == null)
             {
                 user = new ApplicationUser { UserName = SeedUserName };
-                await userManager.CreateAsync(user, tmpPW);
+                await userManager.CreateAsync(user, testUserPw);
             }
 
             return user.Id;
@@ -88,7 +86,7 @@ namespace ContactManager.Data
                 State = "WA",
                 Zip = "10999",
                 Email = "debra@example.com",
-                 ApplicationUser_Id = uid
+                 OwnerID = uid
             },
     new Contact
     {
@@ -98,7 +96,7 @@ namespace ContactManager.Data
         State = "WA",
         Zip = "10999",
         Email = "thorsten@example.com",
-        ApplicationUser_Id = uid
+        OwnerID = uid
     },
     new Contact
     {
@@ -108,7 +106,7 @@ namespace ContactManager.Data
         State = "WA",
         Zip = "10999",
         Email = "yuhong@example.com",
-        ApplicationUser_Id = uid
+        OwnerID = uid
     },
     new Contact
     {
@@ -118,7 +116,7 @@ namespace ContactManager.Data
         State = "WA",
         Zip = "10999",
         Email = "jon@example.com",
-        ApplicationUser_Id = uid
+        OwnerID = uid
     },
     new Contact
     {
@@ -128,7 +126,7 @@ namespace ContactManager.Data
         State = "WA",
         Zip = "10999",
         Email = "diliana@example.com",
-        ApplicationUser_Id = uid
+        OwnerID = uid
     }
     );
             context.SaveChanges();

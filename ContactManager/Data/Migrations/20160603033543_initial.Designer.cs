@@ -72,7 +72,7 @@ namespace ContactManager.Data.Migrations
 
                     b.Property<string>("Address");
 
-                    b.Property<string>("ApplicationUser_Id");
+                    b.Property<string>("OwnerID");
 
                     b.Property<string>("City");
 
