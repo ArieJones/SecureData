@@ -58,6 +58,7 @@ namespace ContactManager
 
             // code removed for brevity
 
+            // Default authentication policy will Require Authenticated User's 
             services.AddMvc(config =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -66,17 +67,12 @@ namespace ContactManager
                 config.Filters.Add(new AuthorizeFilter(policy));
             });
 
+            // Visual Studio is having a problem with HTTPS, but this is what you want to require HTTPS
+
             //services.Configure<MvcOptions>(options =>
             //{
             //    options.Filters.Add(new RequireHttpsAttribute());
             //});
-
-/*            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("CanEdit",
-                                  policy => policy.Requirements.Add(ContactOperationsRequirements.Update));
-            }); */
-
 
             // We can add the ContactRoleAuthorizationHandler as a singleton as all the information
             // it needs is in the Context parameter.

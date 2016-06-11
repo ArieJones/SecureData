@@ -61,7 +61,6 @@ namespace ContactManager.Data
             return ir;
         }
 
-        // TO-DO remove, not needed
         public static void AddRole(string canDeleteRole)
         {
             const string Issuer = "https://contoso.com";

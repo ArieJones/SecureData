@@ -56,7 +56,7 @@ namespace ContactManager.Controllers
             {
                 Address = "123 N 456 E",
                 City = "GF",
-                Email = _userManager.GetUserId(User),
+                Email = _userManager.GetUserName(User),
                 Name = "Joe Smith",
                 State = "MT",
                 Zip = "59405"
