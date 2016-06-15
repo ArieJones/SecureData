@@ -15,13 +15,11 @@ namespace ContactManager.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider, string testUserPw)
         {
-            const string canDeleteRole = "canDelete";
-
             using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
                 var uid =  CreateTestUser(serviceProvider, testUserPw);
-                await CreateCanDeleteRole(serviceProvider, uid, canDeleteRole);
+                await CreateCanDeleteRole(serviceProvider, uid, Constants.canDelete);
                 SeedDB(context, uid);
             }
         }

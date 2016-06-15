@@ -5,12 +5,12 @@ namespace ContactManager
     public static class ContactOperationsRequirements
     {
         public static OperationAuthorizationRequirement Create =
-            new OperationAuthorizationRequirement { Name = "canCreate" };
+            new OperationAuthorizationRequirement { Name = Constants.canCreate  };
         public static OperationAuthorizationRequirement Read =
-            new OperationAuthorizationRequirement { Name = "canRead" };
+            new OperationAuthorizationRequirement { Name = Constants.canRead };
         public static OperationAuthorizationRequirement Update =
-            new OperationAuthorizationRequirement { Name = "canUpdate" };
+            new OperationAuthorizationRequirement { Name = Constants.canUpdate };
         public static OperationAuthorizationRequirement Delete =
-            new OperationAuthorizationRequirement { Name = "canDelete" };
+            new OperationAuthorizationRequirement { Name = Constants.canDelete };
     }
 }
