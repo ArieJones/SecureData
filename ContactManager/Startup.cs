@@ -15,6 +15,7 @@ using ContactManager.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace ContactManager
 {
@@ -112,6 +113,16 @@ namespace ContactManager
             });
 
             var testUserPw = Configuration["SeedUserPW"];
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookie",
+                LoginPath = new PathString("/Account/Unauthorized/"),
+                AccessDeniedPath = new PathString("/Home/AuthzError/"),
+                AutomaticAuthenticate = true,
+                AutomaticChallenge = true
+            });
+
 
             if (String.IsNullOrEmpty(testUserPw))
             {

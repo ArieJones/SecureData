@@ -29,5 +29,9 @@ namespace ContactManager.Controllers
         {
             return View();
         }
+        public IActionResult AuthzError()
+        {
+            return View();
+        }
     }
 }
