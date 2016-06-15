@@ -38,6 +38,15 @@ namespace ContactManager.Controllers
         }
 
         //
+        // GET: /Account/AccessDenied
+        [HttpGet]
+        public IActionResult AccessDenied(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
+
+        //
         // GET: /Account/Login
         [HttpGet]
         [AllowAnonymous]
