@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace ContactManager.Authorization
 {
-    public class ContactHasOneAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
+    public class ContactHasOneAuthorizationHandler 
+                : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
     {
-        protected override void Handle(AuthorizationContext context, OperationAuthorizationRequirement requirement, Contact resource)
+        protected override void Handle(AuthorizationContext context, 
+                OperationAuthorizationRequirement requirement, Contact resource)
         {
 
             if (resource == null)

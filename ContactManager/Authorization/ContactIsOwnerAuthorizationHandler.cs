@@ -5,7 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ContactManager.Authorization
 {
-    public class ContactIsOwnerAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
+    public class ContactIsOwnerAuthorizationHandler 
+                : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
     {
         UserManager<ApplicationUser> _userManager;
 
@@ -14,7 +15,8 @@ namespace ContactManager.Authorization
             _userManager = userManager;
         }
 
-        protected override void Handle(AuthorizationContext context, OperationAuthorizationRequirement requirement, Contact resource)
+        protected override void Handle(AuthorizationContext context, 
+                OperationAuthorizationRequirement requirement, Contact resource)
         {
             if (context.User == null)
             {
