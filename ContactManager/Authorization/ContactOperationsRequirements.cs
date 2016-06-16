@@ -14,6 +14,6 @@ namespace ContactManager.Authorization
         public static OperationAuthorizationRequirement Delete =
             new OperationAuthorizationRequirement { Name = Constants.canDelete };
         public static OperationAuthorizationRequirement ContainsOne =
-            new OperationAuthorizationRequirement { Name = "ContainsOne" };
+            new OperationAuthorizationRequirement { Name = Constants.ContainsOne };
             }
 }

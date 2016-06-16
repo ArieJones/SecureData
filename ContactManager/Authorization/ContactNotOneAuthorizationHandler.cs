@@ -1,5 +1,5 @@
-﻿//#define HasOne
-#if HasOne
+﻿#define NotOne
+#if NotOne
 
 using ContactManager.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -17,14 +17,18 @@ namespace ContactManager.Authorization
                 return;
             }
 
-            if (resource.Address.Contains("1"))
+            // Return if we haven't requested this requirement.
+            if (string.CompareOrdinal(requirement.Name, Constants.ContainsOne) != 0)
             {
-                context.Succeed(requirement);
+                return;
             }
 
+            if (!resource.Address.Contains("1"))
+            {
+                context.Fail();
+            }
         }
     }
 }
 
 #endif
-// Details will be shown if you are the owner or if the address contains 1
