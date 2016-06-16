@@ -1,11 +1,12 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using ContactManager.Authorization;
 using ContactManager.Data;
 using ContactManager.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ContactManager.Controllers
 {
@@ -31,6 +32,11 @@ namespace ContactManager.Controllers
             return View(await _context.Contact.ToListAsync());
         }
 
+        public async Task<IActionResult> Index2()
+        {
+            return View(await _context.Contact.ToListAsync());
+        }
+
         // GET: Contacts/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -45,6 +51,15 @@ namespace ContactManager.Controllers
                 return NotFound();
             }
 
+            // This filter could be used to enforce only contact addresses containing "1" can be displayed.
+            // Index2 uses this filter to display Details links. Uncomment the following to enforced that rule.
+
+            //var isAuthorized = await _authorizationService.AuthorizeAsync(User, contact, ContactOperationsRequirements.ContainsOne);
+            //if (!isAuthorized)
+            //{
+            //    return new ChallengeResult();
+            //}
+
             return View(contact);
         }
 
@@ -57,7 +72,7 @@ namespace ContactManager.Controllers
                 Address = "123 N 456 E",
                 City = "GF",
                 Email = _userManager.GetUserName(User),
-                Name = "Joe Smith",
+                Name = "Rick Anderson",
                 State = "MT",
                 Zip = "59405"
             });

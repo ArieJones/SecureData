@@ -1,12 +1,11 @@
-﻿using ContactManager.Models;
+﻿using ContactManager.Authorization;
+using ContactManager.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ContactManager.Data
@@ -18,30 +17,32 @@ namespace ContactManager.Data
             using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
-                var uid =  CreateTestUser(serviceProvider, testUserPw);
+                var uid = await CreateTestUser(serviceProvider, testUserPw);
                 await CreateCanDeleteRole(serviceProvider, uid, Constants.canDelete);
                 SeedDB(context, uid);
             }
         }
 
-        private static string CreateTestUser(IServiceProvider serviceProvider, string testUserPw)
+        private static async Task<string> CreateTestUser(IServiceProvider serviceProvider, string testUserPw)
         {
             const string SeedUserName = "test@example.com";
 
             var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
-            var user =  userManager.FindByNameAsync(SeedUserName).Result;
+            var user = await userManager.FindByNameAsync(SeedUserName);
             if (user == null)
             {
                 user = new ApplicationUser { UserName = SeedUserName };
-                userManager.CreateAsync(user, testUserPw);
+                await userManager.CreateAsync(user, testUserPw);
             }
 
             return user.Id;
-        }       
+        }
 
         private static async Task<IdentityResult> CreateCanDeleteRole(IServiceProvider serviceProvider, string uid, string canDeleteRole)
         {
+            // To-do log IdentityResult
+
             IdentityResult ir = null;
             var roleManager = serviceProvider.GetService<RoleManager<IdentityRole>>();
 
@@ -53,11 +54,11 @@ namespace ContactManager.Data
             var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
 
             var user = await userManager.FindByIdAsync(uid);
-           
+
             ir = await userManager.AddToRoleAsync(user, canDeleteRole);
+
             return ir;
         }
-
 
         public static void SeedDB(ApplicationDbContext context, string uid)
         {
@@ -68,15 +69,15 @@ namespace ContactManager.Data
 
             context.Contact.AddRange(
                 new Contact
-            {
-                Name = "Debra Garcia",
-                Address = "1234 Main St",
-                City = "Redmond",
-                State = "WA",
-                Zip = "10999",
-                Email = "debra@example.com",
-                OwnerID = uid
-            },
+                {
+                    Name = "Debra Garcia",
+                    Address = "1234 Main St",
+                    City = "Redmond",
+                    State = "WA",
+                    Zip = "10999",
+                    Email = "debra@example.com",
+                    OwnerID = uid
+                },
              new Contact
              {
                  Name = "Thorsten Weinrich",

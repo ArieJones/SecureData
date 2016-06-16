@@ -2,18 +2,24 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
-namespace ContactManager
+namespace ContactManager.Authorization
 {
-    public class ContactRoleAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
+    public class ContactHasOneAuthorizationHandler : AuthorizationHandler<OperationAuthorizationRequirement, Contact>
     {
         protected override void Handle(AuthorizationContext context, OperationAuthorizationRequirement requirement, Contact resource)
         {
-            if (context.User == null)
+
+            if (resource == null)
             {
                 return;
             }
 
-            if (context.User.IsInRole(requirement.Name))
+            if (string.CompareOrdinal(requirement.Name, "ContainsOne") != 0)
+            {
+                return;
+            }
+
+            if (resource.Address.Contains("1"))
             {
                 context.Succeed(requirement);
             }
